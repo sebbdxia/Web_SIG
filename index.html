@@ -64,6 +64,11 @@
     <body>
         <div id="map">
 <div id="leafletMap"></div>
+
+<button id="exportGeoJSON" style="position:absolute; top: 420px; right: 10px; z-index:10000; padding:8px; background:#fff; border:1px solid #aaa; cursor:pointer;">
+Exporter les annotations
+</button>
+
             <div id="popup" class="ol-popup">
                 <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                 <div id="popup-content"></div>
@@ -136,6 +141,32 @@ document.addEventListener('DOMContentLoaded', function () {
       "features": all
     }));
   });
+});
+</script>
+
+
+<script>
+// Bouton d'export des annotations
+document.getElementById("exportGeoJSON").addEventListener("click", function () {
+  if (annotations.getLayers().length === 0) {
+    alert("Aucune annotation à exporter.");
+    return;
+  }
+
+  var geojson = {
+    type: "FeatureCollection",
+    features: annotations.getLayers().map(function (layer) {
+      return layer.toGeoJSON();
+    })
+  };
+
+  var blob = new Blob([JSON.stringify(geojson, null, 2)], {type: "application/json"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "annotations_ccrm.geojson";
+  a.click();
+  URL.revokeObjectURL(url);
 });
 </script>
 
